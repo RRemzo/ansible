@@ -6,9 +6,9 @@
       apt:
         upgrade: yes
         update_cache: yes
-    - name: update apt packages on localhost
-      local_action:
-        module: apt
-        upgrade: yes
-        update_cache: yes
+   # - name: update apt packages on localhost
+    #  local_action:
+    #    module: apt
+    #    upgrade: yes
+     #   update_cache: yes
 
