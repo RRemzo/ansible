@@ -11,4 +11,4 @@
         module: apt
         upgrade: yes
         update_cache: yes
-        ansible_user: ansible
+
