@@ -1,3 +1,7 @@
+---
+- hosts: all
+  become: true  
+  tasks:
     - name: docker container ls -a
       tags: container_ls
       become: True
