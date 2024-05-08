@@ -2,20 +2,20 @@
 - hosts: all
   become: true
   tasks:
-    - name: Get information about all Docker containers
+    - name: Gathering Docker Facts
       docker_container_info:
       register: containers
 
-    - name: Check container statuses and start stopped ones
+    - name: Check Container Status 
       loop: "{{ containers.results }}"
       when: item.state == "stopped"
       block:
-        - name: Container {{ item.name }} is stopped, starting it
+        - name: Container/s not running
           debug:
             msg: "Container {{ item.name }} is stopped, attempting to start."
           delegate_to: localhost
 
-        - name: Start the container
+        - name: Attempting to start container/s
           docker_container:
             name: "{{ item.name }}"
             state: started
