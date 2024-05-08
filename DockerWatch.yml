@@ -19,7 +19,7 @@
           docker_container:
             name: "{{ item.name }}"
             state: started
-        rescue:
-          - name: Failed to start container {{ item.name }}
-            debug:
-              msg: "Failed to start container {{ item.name }}. Check logs for details."
+          rescue:
+            - name: Failed to start container {{ item.name }}
+              debug:
+                msg: "Failed to start container {{ item.name }}. Check logs for details."
