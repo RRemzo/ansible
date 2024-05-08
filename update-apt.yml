@@ -11,19 +11,6 @@
 #    #    module: apt
 #    #    upgrade: yes
 #     #   update_cache: yes
-#---
-#- hosts: all
-#  become: true
-#  tasks:
-#    - name: Update apt packages and register the output
-#      apt:
-#        upgrade: yes
-#        update_cache: yes
-#      register: apt_update_result
-
-#    - name: Display the updated packages
-#      debug:
-#        msg: "The following packages were updated: {{ apt_update_result.stdout }}"
 ---
 - hosts: all
   become: true
@@ -34,8 +21,9 @@
         update_cache: yes
       register: apt_update_result
 
-    - name: Display the updated packages on a single line
+    - name: Display the updated packages
       debug:
-        msg: "The following packages were updated: {{ apt_update_result.stdout | replace('\n', ', ') }}"
+        msg: "The following packages were updated: {{ apt_update_result.stdout }}"
+
 
 
