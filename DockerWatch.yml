@@ -1,13 +1,25 @@
 ---
 - hosts: all
-  become: true
+  become: true  
   tasks:
     - name: Gathering Docker Facts
       docker_container_info:
         register: containers
 
-    - name: Check Container Status  # Loop outside the block
+    - name: Check Container Status  
       loop: "{{ containers.results }}"
       when: item.state == "stopped"
-      # Block with tasks to start container and handle errors (optional)
+      block:
+        - name: Container/s not running
+          debug:
+            msg: "Container {{ item.name }} is stopped, attempting to start."
+          delegate_to: localhost
 
+        - name: Attempting to start container/s
+          docker_container:
+            name: "{{ item.name }}"
+            state: started
+	   rescue:  # Optional error handling 
+        - name: Failed to start container {{ item.name }}
+			      debug:
+			        msg: "Failed to start container {{ item.name }}. Check logs for details."
