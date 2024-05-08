@@ -11,6 +11,19 @@
 #    #    module: apt
 #    #    upgrade: yes
 #     #   update_cache: yes
+#---
+#- hosts: all
+#  become: true
+#  tasks:
+#    - name: Update apt packages and register the output
+#      apt:
+#        upgrade: yes
+#        update_cache: yes
+#      register: apt_update_result
+
+#    - name: Display the updated packages
+#      debug:
+#        msg: "The following packages were updated: {{ apt_update_result.stdout }}"
 ---
 - hosts: all
   become: true
@@ -21,7 +34,10 @@
         update_cache: yes
       register: apt_update_result
 
-    - name: Display the updated packages
+    - name: Display the updated packages on multiple indented lines
       debug:
-        msg: "The following packages were updated: {{ apt_update_result.stdout }}"
+        msg: "{{ apt_update_result.stdout }}"
+      delegate_to: localhost
+      vars:
+        no_log: all  # Prevent additional logging from the debug module
 
