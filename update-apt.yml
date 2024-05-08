@@ -23,7 +23,7 @@
 
     - name: Display the updated packages
       debug:
-        msg: "The following packages were updated: {{ apt_update_result.stdout }}"
+        msg: "The following packages were updated: {{ apt_update_result.stdout_lines }}"
 
 
 
