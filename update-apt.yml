@@ -1,14 +1,27 @@
+#---
+#- hosts: all
+#  become: true
+#  tasks:
+#    - name: update apt packages on remote hosts
+#      apt:
+#        upgrade: yes
+#        update_cache: yes
+#   # - name: update apt packages on localhost
+#    #  local_action:
+#    #    module: apt
+#    #    upgrade: yes
+#     #   update_cache: yes
 ---
 - hosts: all
   become: true
   tasks:
-    - name: update apt packages on remote hosts
+    - name: Update apt packages and register the output
       apt:
         upgrade: yes
         update_cache: yes
-   # - name: update apt packages on localhost
-    #  local_action:
-    #    module: apt
-    #    upgrade: yes
-     #   update_cache: yes
+      register: apt_update_result
+
+    - name: Display the updated packages
+      debug:
+        msg: "The following packages were updated: {{ apt_update_result.stdout }}"
 
