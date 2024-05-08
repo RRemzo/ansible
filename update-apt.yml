@@ -34,10 +34,8 @@
         update_cache: yes
       register: apt_update_result
 
-    - name: Display the updated packages on multiple indented lines
+    - name: Display the updated packages on a single line
       debug:
-        msg: "{{ apt_update_result.stdout }}"
-      delegate_to: localhost
-      vars:
-        no_log: all  # Prevent additional logging from the debug module
+        msg: "The following packages were updated: {{ apt_update_result.stdout | replace('\n', ', ') }}"
+
 
