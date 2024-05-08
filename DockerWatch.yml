@@ -2,14 +2,10 @@
 - hosts: all
   become: true  
   tasks:
-    - name: Gathering Docker Facts
-      docker_container_info:
-        register: containers
-
     - name: Check Container Status  
       block:
         - name: Check each container status
           include_tasks: DockerStart.yml
-          loop: "{{ containers.results }}"
+          loop: "{{ ansible_facts.docker_container_info }}"
           loop_control:
             loop_var: item
