@@ -1,11 +1,26 @@
 ---
 - hosts: all
-  become: true  
+  become: true  # Requires elevated privileges to manage containers
   tasks:
-    - name: Check Container Status  
-      block:
-        - name: Check each container status
-          include_tasks: DockerStart.yml
-          loop: "{{ ansible_facts.docker_container_info }}"
-          loop_control:
-            loop_var: item
+    - name: Get information about all Docker containers (using shell)
+      shell: docker ps -a
+      register: container_list_output
+
+    - name: Parse container list output and extract names
+      set_fact:
+        containers: "{{ container_list_output.stdout.split('\n')[1:] | map(attribute='split')[0] }}"
+
+    - name: Check container statuses and start stopped ones
+      loop: "{{ containers }}"
+      tasks:
+        - name: Get detailed information for container {{ item }}
+          docker_container_info:
+            name: "{{ item }}"
+          register: container_info
+
+        - name: Start container {{ item }} if stopped
+          when: container_info.result.state == "stopped"
+          docker_container:
+            name: "{{ item }}"
+            state: started
+        # Optional: Add error handling for failed container starts (see previous discussions)
