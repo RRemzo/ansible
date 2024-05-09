@@ -1,0 +1,3 @@
+- name: Get Docker container info
+  shell: docker ps -a --format "{{.Names}}|{{.Status}}"
+  register: docker_ps_output
