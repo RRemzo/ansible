@@ -1,16 +1,16 @@
 ---
 - hosts: all
-  become: true  # Assuming you need elevated privileges
+  become: true
   tasks:
-  - name: Get Docker container info (using single quotes)
-    shell: 'docker ps -a --format "{{.Names}}|{{.Status}}"'
-    register: docker_ps_output
+    - name: Get Docker container info
+      shell: /path/to/docker_ps.sh
+      register: docker_ps_output
 
-  - name: Check container health and start stopped containers
-    debug:
-      msg: "{{ item.split('|')[0] }} is {{ item.split('|')[1] }}"
-    loop: "{{ docker_ps_output.stdout_lines }}"
-    when:
-      - "not ('Up' in item.split('|')[1] or 'healthy' in item.split('|')[1]) or 'Exited' in item.split('|')[1]"
-    loop_control:
-      label: "Container: {{ item.split('|')[0] }}"
+    - name: Check container health and start stopped containers
+      debug:
+        msg: "{{ item.split('|')[0] }} is {{ item.split('|')[1] }}"
+      loop: "{{ docker_ps_output.stdout_lines }}"
+      when:
+        - "not ('Up' in item.split('|')[1] or 'healthy' in item.split('|')[1]) or 'Exited' in item.split('|')[1]"
+      loop_control:
+        label: "Container: {{ item.split('|')[0] }}"
