@@ -3,13 +3,12 @@
   become: true  
   tasks:
     - name: Get Docker container info
-      command: docker ps -a --format '{{.Names}}|{{.Status}}'
+      command: docker ps -a
       register: docker_ps_output
 
     - name: Parse Docker container info
       set_fact:
-        containers_info:
-          "{{ docker_ps_output.stdout_lines | map('regex_replace', '^(.+)\\|(.+)', '\\1:\\2') | list }}"
+        containers_info: "{{ docker_ps_output.stdout_lines[1:] | map('regex_replace', '^(\\S+)\\s+(\\S+).*', '\\1:\\2') | list }}"
 
     - name: Check container health
       debug:
