@@ -1,9 +1,9 @@
 ---
 - hosts: all
-  become: true
+  become: true  # Assuming you need elevated privileges
   tasks:
-  - name: Get Docker container info
-    shell: docker ps -a --format "{{.Names}}|{{.Status}}"  # Use shell module
+  - name: Get Docker container info (using single quotes)
+    shell: 'docker ps -a --format "{{.Names}}|{{.Status}}"'
     register: docker_ps_output
 
   - name: Check container health and start stopped containers
