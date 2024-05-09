@@ -1,36 +1,26 @@
 ---
-- name: Check container status and manage stopped containers
-  hosts: all
-  become: true  # Ensure administrative privileges for Docker commands
-
+- hosts: all
+  become: true  
   tasks:
-    # Get detailed container information using docker ps -a
-    - name: List all containers with detailed information
-      command: docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Health.Status}}"
-      register: container_info
+    - name: Get Docker container info
+      command: docker ps -a --format '{{.Names}}|{{.Status}}'
+      register: docker_ps_output
 
-    # Parse container output and identify unhealthy or stopped containers
-    - name: Parse container output
+    - name: Parse Docker container info
       set_fact:
-        unhealthy_containers: "{{ container_info.results | selectattr('status', '!=' , 'healthy') }}"
-        stopped_containers: "{{ container_info.results | selectattr('status', '==', 'exited') }}"
+        containers_info:
+          "{{ docker_ps_output.stdout_lines | map('regex_replace', '^(.+)\\|(.+)', '\\1:\\2') | list }}"
 
-    # Start stopped containers with error handling
-    - name: Start stopped containers
-      when: stopped_containers  # Conditional execution
-      loop: "{{ stopped_containers }}"
-      delegate_to: localhost  # Execute on the control machine (ideally)
-      command: docker start {{ item.names }}
-      register: start_result  # Register the command result
-
-    # Handle errors during container start
-    - name: Report start errors (optional)
-      fail:
-        msg: "Failed to start container {{ item.names }}. Error: {{ start_result.stderr }}"
-      when: start_result.rc != 0  # Check for non-zero exit code (error)
-
-    # Report unhealthy container names
-    - name: Report unhealthy containers
+    - name: Check container health
       debug:
-        msg: "{{ item.names }} is unhealthy."
-      loop: "{{ unhealthy_containers }}"
+        msg: "{{ item.split(':')[0] }} is {{ item.split(':')[1] }}"
+      loop: "{{ containers_info }}"
+      when: 
+        - "not ('Up' in item.split(':')[1] or 'healthy' in item.split(':')[1])"
+
+    - name: Start stopped containers
+      docker_container:
+        name: "{{ item.split(':')[0] }}"
+        state: started
+      loop: "{{ containers_info }}"
+      when: "'Exited' in item.split(':')[1]"
