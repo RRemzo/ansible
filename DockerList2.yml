@@ -1,3 +1,15 @@
-- name: Get Docker container info
-  shell: docker ps -a --format "{{.Names}}|{{.Status}}"
-  register: docker_ps_output
+---
+- hosts: all
+  become: true  
+  tasks:
+    - name: docker container ls -a
+      tags: container_ls
+      become: True
+      shell:
+        "shell: docker ps -a --format "{{.Names}}|{{.Status}}""
+      register: container_info
+
+    - name: docker container ls -a result
+      tags: container_ls
+      debug:
+        msg: "{{container_info.stdout_lines}}"
