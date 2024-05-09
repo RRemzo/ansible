@@ -2,7 +2,7 @@
 - hosts: all
   become: true
   tasks:
-    - name: Get Docker container info
+    - name: Get Docker info
       shell: /opt/ansible/docker_ps.sh
       register: docker_ps_output
 
