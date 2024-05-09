@@ -5,7 +5,7 @@
     - name: docker container ls -a
       tags: container_ls
       shell:
-        "shell: docker ps -a --format "{{.Names}}|{{.Status}}""
+        "shell: docker ps -a --format '{{.Names}}|{{.Status}}'"
       register: container_info
 
     - name: docker container ls -a result
