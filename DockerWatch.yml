@@ -15,12 +15,19 @@
         unhealthy_containers: "{{ container_info.results | selectattr('status', '!=' , 'healthy') }}"
         stopped_containers: "{{ container_info.results | selectattr('status', '==', 'exited') }}"
 
-    # Start stopped containers
+    # Start stopped containers with error handling
     - name: Start stopped containers
       when: stopped_containers  # Conditional execution
       loop: "{{ stopped_containers }}"
       delegate_to: localhost  # Execute on the control machine (ideally)
       command: docker start {{ item.names }}
+      register: start_result  # Register the command result
+
+    # Handle errors during container start
+    - name: Report start errors (optional)
+      fail:
+        msg: "Failed to start container {{ item.names }}. Error: {{ start_result.stderr }}"
+      when: start_result.rc != 0  # Check for non-zero exit code (error)
 
     # Report unhealthy container names
     - name: Report unhealthy containers
