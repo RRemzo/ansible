@@ -4,7 +4,6 @@
   tasks:
     - name: docker container ls -a
       tags: container_ls
-      become: True
       shell:
         "shell: docker ps -a --format "{{.Names}}|{{.Status}}""
       register: container_info
