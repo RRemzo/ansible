@@ -1,26 +1,29 @@
 ---
-- hosts: all
-  become: true  # Requires elevated privileges to manage containers
+- name: Check container status and manage stopped containers
+  hosts: all
+  become: true  # Ensure administrative privileges for Docker commands
+
   tasks:
-    - name: Get information about all Docker containers (using shell)
-      shell: docker ps -a
-      register: container_list_output
+    # Get detailed container information using docker ps -a
+    - name: List all containers with detailed information
+      command: docker ps -a --format "table {{.Names}}\t{{.Status}}\t{{.Health.Status}}"
+      register: container_info
 
-    - name: Parse container list output and extract names
+    # Parse container output and identify unhealthy or stopped containers
+    - name: Parse container output
       set_fact:
-        containers: "{{ container_list_output.stdout.split('\n')[1:] | map(attribute='split')[0] }}"
+        unhealthy_containers: "{{ container_info.results | selectattr('status', '!=' , 'healthy') }}"
+        stopped_containers: "{{ container_info.results | selectattr('status', '==', 'exited') }}"
 
-    - name: Check container statuses and start stopped ones
-      loop: "{{ containers }}"
-      tasks:
-        - name: Get detailed information for container {{ item }}
-          docker_container_info:
-            name: "{{ item }}"
-          register: container_info
+    # Start stopped containers
+    - name: Start stopped containers
+      when: stopped_containers  # Conditional execution
+      loop: "{{ stopped_containers }}"
+      delegate_to: localhost  # Execute on the control machine (ideally)
+      command: docker start {{ item.names }}
 
-        - name: Start container {{ item }} if stopped
-          when: container_info.result.state == "stopped"
-          docker_container:
-            name: "{{ item }}"
-            state: started
-        # Optional: Add error handling for failed container starts (see previous discussions)
+    # Report unhealthy container names
+    - name: Report unhealthy containers
+      debug:
+        msg: "{{ item.names }} is unhealthy."
+      loop: "{{ unhealthy_containers }}"
