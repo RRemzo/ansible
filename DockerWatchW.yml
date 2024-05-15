@@ -11,8 +11,8 @@
         containers_info: "{{ docker_ps_output.stdout_lines[1:] | map('regex_replace', '^(\\S+)\\s+(\\S+).*', '\\1:\\2') | list }}"
 
     - name: Check container health
-      debug:
-        msg: "{{ item.split(':')[0] }} is {{ item.split(':')[1] }}"
+  debug:
+        msg: {{{{"{{ item.split(':')[0] }} is {{ item.split(':')[1] }}"
       loop: "{{ containers_info }}"
       when: 
         - "not ('Up' in item.split(':')[1] or 'healthy' in item.split(':')[1])"
