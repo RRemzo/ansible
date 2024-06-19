@@ -2,11 +2,11 @@
   become: true
   tasks:
     - name: Update apk package index
-      command: apk update
+      command: doas apk update
       register: apk_update_result
 
     - name: Upgrade apk packages
-      command: apk upgrade
+      command: doas apk upgrade
       register: apk_upgrade_result
 
     - name: Result
