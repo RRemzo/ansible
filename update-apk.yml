@@ -9,7 +9,7 @@
       command: apk upgrade
       register: apk_upgrade_result
 
-    - name: Display the updated packages
+    - name: Result
       debug:
         msg: "{{ apk_update_result.stdout_lines }}"
         msg: "{{ apk_upgrade_result.stdout_lines }}"
