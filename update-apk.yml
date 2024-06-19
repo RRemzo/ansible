@@ -2,16 +2,7 @@
   tasks:
     - name: Update apk package index
       command: doas apk update
-      register: apk_update_result
-
-    - name: Display update result
-      debug:
-        msg: "APK update result: {{ apk_update_result.stdout }}"
-
+      
     - name: Upgrade apk packages
       command: doas apk upgrade
-      register: apk_upgrade_result
 
-    - name: Display upgrade result
-      debug:
-        msg: "APK upgrade result: {{ apk_upgrade_result.stdout }}"
