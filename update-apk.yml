@@ -1,0 +1,12 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Update apk packages and upgrade the system
+      apk:
+        update_cache: yes
+        upgrade: yes
+      register: apk_update_result
+
+    - name: Display the updated packages
+      debug:
+        msg: "{{ apk_update_result.stdout_lines }}"
