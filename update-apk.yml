@@ -4,12 +4,15 @@
     - name: Update apk package index
       command: doas apk update
       register: apk_update_result
+
+    - name: Display update result
+      debug:
+        msg: "APK update result: {{ apk_update_result.stdout }}"
+
     - name: Upgrade apk packages
       command: doas apk upgrade
       register: apk_upgrade_result
-    - name: Update result
+
+    - name: Display upgrade result
       debug:
-        msg: "{{ apk_upgrade_result.stdout_lines }}"
-    - name: Upgrade result
-      debug:
-        msg: "{{ apk_upgrade_result.stdout_lines }}"
+        msg: "APK upgrade result: {{ apk_upgrade_result.stdout }}"
