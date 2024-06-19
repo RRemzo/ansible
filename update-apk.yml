@@ -1,18 +1,15 @@
 - hosts: all
   become: true
-  tasks:   
-   - name: Update apk package index
+  tasks:
+    - name: Update apk package index
       command: doas apk update
       register: apk_update_result
-
     - name: Upgrade apk packages
       command: doas apk upgrade
       register: apk_upgrade_result
-      
     - name: Update result
       debug:
-        msg: "{{ apk_update_result.stdout_lines }}"      
-
+        msg: "{{ apk_upgrade_result.stdout_lines }}"
     - name: Upgrade result
       debug:
         msg: "{{ apk_upgrade_result.stdout_lines }}"
