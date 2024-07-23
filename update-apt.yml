@@ -1,17 +1,17 @@
-- hosts: debian
+- hosts: all
   become: yes
   tasks:
-    - name: Debian/Raspbian Update
+    - name: Debian/Ubuntu Update
       apt:
         update_cache: true
         upgrade: yes
-      register: debian
+      register: apt_update
     #- debug:
-    #    msg: " {{ debian.stdout_lines }} "
+    #    msg: " {{ apt_update.stdout_lines }} "
     - name: List installed and updated packages
       shell: grep -E "^$(date +%Y-%m-%d).+ (install|upgrade) " /var/log/dpkg.log |cut -d " " -f 3-5
       register: result
-      when: debian.changed
+      when: apt_update.changed
     - name: Show Output
       debug: msg="{{ result.stdout_lines }}"
-      when: debian.changed
+      when: apt_update.changed
