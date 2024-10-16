@@ -1,6 +1,6 @@
 ---
 - name: Start Caddy server
-  hosts: webservers
+  hosts: all
   become: yes  # Ensure the playbook is executed with elevated privileges
   tasks:
     - name: Ensure Caddy is installed
