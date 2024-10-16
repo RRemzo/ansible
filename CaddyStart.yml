@@ -22,12 +22,21 @@
       command: caddy start --config /etc/caddy/Caddyfile
       args:
         chdir: /etc/caddy/
+      register: caddy_start_output  # Register the command output
 
-    - name: Verify Caddy is running
+    - name: Show output of Caddy start command
+      debug:
+        msg: "{{ caddy_start_output.stdout }}"  # Display stdout from the command
+
+    - name: Check if Caddy is running
       command: pgrep caddy
       register: caddy_running
       failed_when: caddy_running.rc != 0
       ignore_errors: yes
+
+    - name: Show output of pgrep command (checking if Caddy is running)
+      debug:
+        msg: "{{ caddy_running.stdout }}"  # Display the result of the pgrep command
 
     - name: Fail if Caddy did not start
       fail:
