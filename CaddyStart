@@ -1,0 +1,35 @@
+---
+- name: Start Caddy server
+  hosts: webservers
+  become: yes  # Ensure the playbook is executed with elevated privileges
+  tasks:
+    - name: Ensure Caddy is installed
+      package:
+        name: caddy
+        state: present
+
+    - name: Ensure /etc/caddy/Caddyfile exists
+      stat:
+        path: /etc/caddy/Caddyfile
+      register: caddyfile_status
+
+    - name: Fail if Caddyfile does not exist
+      fail:
+        msg: "Caddyfile not found at /etc/caddy/Caddyfile"
+      when: not caddyfile_status.stat.exists
+
+    - name: Start Caddy server
+      command: caddy start --config /etc/caddy/Caddyfile
+      args:
+        chdir: /etc/caddy/
+
+    - name: Verify Caddy is running
+      command: pgrep caddy
+      register: caddy_running
+      failed_when: caddy_running.rc != 0
+      ignore_errors: yes
+
+    - name: Fail if Caddy did not start
+      fail:
+        msg: "Caddy failed to start"
+      when: caddy_running.rc != 0
